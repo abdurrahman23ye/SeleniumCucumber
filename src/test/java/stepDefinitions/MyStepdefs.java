@@ -7,12 +7,17 @@ import io.cucumber.java.en.Then;
 import org.junit.Assert;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.MainPage;
 import pages.SignUpPage;
 import pages.SignUp_Login;
 import utilities.ConfigReader;
 import utilities.Driver;
+
+import java.time.Duration;
 
 public class MyStepdefs {
     MainPage mainPage=new MainPage();
@@ -36,10 +41,6 @@ public class MyStepdefs {
     }
 
 
-    @Then("Navigate to url http:\\/\\/automationexercise.com")
-    public void navigateToUrlHttpAutomationexerciseCom() {
-        Driver.getDriver().get(ConfigReader.getProperty("mainPage"));
-    }
 
     @And("Click on Signup \\/ Login button")
     public void clickOnSignupLoginButton() {
@@ -56,7 +57,7 @@ public class MyStepdefs {
     @And("Enter name and email address")
     public void enterNameAndEmailAddress() {
 
-        signUp_login.newUserSignUpName.sendKeys(ConfigReader.getProperty("dogruIsim"));
+        signUp_login.newUserSignUpName.sendKeys(ConfigReader.getProperty("dogruisim"));
 
         js.executeScript("window.scrollBy(0,150)");
         signUp_login.newUserSignUpEmail.sendKeys(ConfigReader.getProperty("dogruEmail"));
@@ -140,12 +141,74 @@ public class MyStepdefs {
 
     @And("Verify that Logged in as username is visible")
     public void verifyThatLoggedInAsUsernameIsVisible() {
-        Assert.assertTrue(mainPage.loggedName.getText().equals(ConfigReader.getProperty("dogruIsim")));
+        Assert.assertTrue(mainPage.loggedName.getText().equals(ConfigReader.getProperty("dogruisim")));
 
     }
 
     @And("Click Delete Account button")
     public void clickDeleteAccountButton() {
         mainPage.deleteAccount.click();
+    }
+
+    @And("Close the page")
+    public void closeThePage() {
+        Driver.closeDriver();
+    }
+
+    @Then("Navigate to url {string}")
+    public void navigateToUrl(String mainPage) {
+        Driver.getDriver().get(ConfigReader.getProperty("mainPage"));
+    }
+
+
+    @And("Verify Login to your account is visible")
+    public void verifyLoginToYourAccountIsVisible() {
+        Assert.assertTrue(signUp_login.loginLabel.isDisplayed());
+    }
+
+    @And("Enter correct email address and password")
+    public void enterCorrectEmailAddressAndPassword() {
+
+        signUp_login.inputEmail.sendKeys(ConfigReader.getProperty("dogruEmail"));
+
+        action.sendKeys(Keys.TAB).sendKeys(ConfigReader.getProperty("signUpPassword")).perform();
+    }
+
+    @And("Click login button")
+    public void clickLoginButton() {
+
+        signUp_login.login.click();
+    }
+
+    @And("Enter incorrect email address and password")
+    public void enterIncorrectEmailAddressAndPassword() {
+
+
+        signUp_login.inputEmail.sendKeys(ConfigReader.getProperty("incorrectEmail"));
+
+        js.executeScript("window.scrollBy(0,150)");
+
+        action.sendKeys(Keys.TAB).perform();
+        action.sendKeys(ConfigReader.getProperty("inCorrectPassword")).perform();
+
+        js.executeScript("window.scrollBy(0,-150)");
+
+
+
+    }
+
+    @And("Verify error Your email or password is incorrect! is visible")
+    public void verifyErrorYourEmailOrPasswordIsIncorrectIsVisible() {
+        Assert.assertTrue(signUp_login.loginerror.isDisplayed());
+    }
+
+    @Then("wait {int} seconds")
+    public void waitSeconds(int arg0) {
+
+        try {
+            Thread.sleep(arg0*1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
